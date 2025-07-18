@@ -2,14 +2,17 @@
 
 ## 项目概览
 
-本项目用于根据北京地铁数据，查询从指定站点出发，在给定票价预算下可达的所有站点及路径。主要逻辑集中在 `main.py`，数据来源为远程 JSON 文件。
+本项目用于根据北京地铁数据，查询从指定站点出发，在给定票价预算下可达的所有站点及路径。项目采用 Go 语言实现，具有高性能、跨平台编译、单文件部署等特点。
 
 ## 主要文件
 
-- `main.py`：核心脚本，包含数据加载、票价计算、Dijkstra 路径搜索、命令行参数解析和结果输出。
-- `pyproject.toml`：项目元数据和依赖声明（如 requests）。
-- `uv.toml`：配置 PyPI 镜像。
-- `README.md`：用法、依赖和功能说明。
+- `main.go`：程序主入口
+- `src/data/types.go`：数据结构定义
+- `src/utils/utils.go`：工具函数
+- `src/utils/dijkstra.go`：Dijkstra 算法实现
+- `src/utils/utils_test.go`：单元测试
+- `Makefile`：构建和开发工具链
+- `go.mod`：Go 模块依赖管理
 
 ## 架构与数据流
 
@@ -20,38 +23,53 @@
 
 ## 依赖管理
 
-- 推荐使用 [uv](https://github.com/astral-sh/uv) 管理依赖：
-  ```bash
-  uv pip install -r requirements.txt
-  ```
-- 也可用 pip3 安装：
-  ```bash
-  pip3 install -r requirements.txt
-  ```
+```bash
+# 下载并整理依赖
+go mod download
+go mod tidy
+```
 
 ## 运行方式
 
-- 直接运行主脚本：
+- 直接运行：
   ```bash
-  python3 main.py <出发站名> <车费预算(元)>
+  go run main.go <出发站名> <车费预算(元)>
   ```
-  示例：
+- 使用 Makefile：
   ```bash
-  python3 main.py 西直门 4
+  make run                    # 运行示例
+  make build                  # 构建当前平台
+  make build-all             # 构建所有平台版本
+  make build-arm64           # 构建所有 ARM64 版本
+  ```
+- 构建后运行：
+  ```bash
+  make build
+  ./build/metro 西直门 4
   ```
 
 ## 关键约定与模式
 
-- 票价计算逻辑在 `calc_price`，与北京地铁实际规则保持一致。
+### 通用规则
+- 票价计算逻辑在 `CalcPrice` 函数，与北京地铁实际规则保持一致。
 - 路径搜索统一用 Dijkstra 算法，所有站点和路径均通过此算法生成。
 - 地铁数据通过远程 JSON 获取，无需本地数据文件。
 - 结果输出格式为：站点名、距离、路径、票价、所属线路。
 
+### Go 版本特点
+- 模块化设计，分为 `data`、`utils` 包。
+- 支持跨平台编译，包括 AMD64 和 ARM64 架构。
+- 单文件部署，无需运行时依赖。
+- 包含完整的测试套件和开发工具链。
+
 ## 调试与扩展建议
 
-- 如需调试或扩展票价规则，建议直接修改 `main.py` 的相关函数。
-- 若需更换数据源，修改 `main.py` 顶部的 URL 即可。
-- 所有核心逻辑均在单文件实现，便于快速理解和修改。
+### Go 版本
+- 票价计算逻辑在 `src/utils/utils.go` 的 `CalcPrice` 函数。
+- Dijkstra 算法实现在 `src/utils/dijkstra.go`。
+- 数据结构定义在 `src/data/types.go`。
+- 使用 `make test` 运行测试，`make check` 进行完整检查。
+- 支持多架构编译：`make build-all` 构建所有平台版本。
 
 ## 示例输出
 
