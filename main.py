@@ -1,4 +1,3 @@
-
 import heapq
 import requests
 
@@ -69,6 +68,16 @@ def name_to_id(sta_to_id: dict, name: str) -> str:
 def id_to_name(sta_dict: dict, id_: str) -> str:
     return sta_dict[id_]['name'] if id_ in sta_dict else id_
 
+# 获取站点所属线路名
+
+
+def get_station_lines(sta_id: str, line_detail: dict) -> list:
+    lines = []
+    for line_id, detail in line_detail.items():
+        if int(sta_id) in detail.get('staList', []):
+            lines.append(detail['name'])
+    return lines
+
 # 主入口
 
 
@@ -89,6 +98,7 @@ def main():
     sta_dict = data['staDict']
     sta_to_id = data['staToId']
     free_dis = int(data['freeDis'])
+    line_detail = data['lineDetail']
 
     start_id = name_to_id(sta_to_id, start_name)
     if start_id == "-1":
@@ -101,8 +111,10 @@ def main():
     for sid, info in result.items():
         if info['price'] == budget and sid != start_id:
             path_names = [id_to_name(sta_dict, pid) for pid in info['path']]
+            lines = get_station_lines(sid, line_detail)
+            line_str = ', '.join(lines) if lines else '未知'
             print(
-                f"{id_to_name(sta_dict, sid)} | 距离: {info['distance']}m | 票价: {info['price']}元 | 路径: {' -> '.join(path_names)}")
+                f"{id_to_name(sta_dict, sid)} | 距离: {info['distance']}m | 票价: {info['price']}元 | 路径: {' -> '.join(path_names)} | 线路: {line_str}")
             count += 1
     print(f"共 {count} 个站点可达。")
 
