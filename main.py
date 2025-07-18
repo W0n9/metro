@@ -5,8 +5,6 @@ import requests
 DATA_URL = "https://static.qinxr.cn/Hyacinth/farecalc.json"
 
 # 票价计算规则
-
-
 def calc_price(dis: int, free_dis: int) -> int:
     dis -= free_dis
     if dis <= -free_dis:
@@ -23,16 +21,12 @@ def calc_price(dis: int, free_dis: int) -> int:
         return int((dis - 32000) / 20000 + 7)
 
 # 加载地铁数据
-
-
 def load_metro_data() -> dict:
     resp = requests.get(DATA_URL, timeout=15)
     resp.raise_for_status()
     return resp.json()
 
 # Dijkstra算法，返回所有可达站点及路径、距离、票价
-
-
 def dijkstra_all(sta_dict: dict, start_id: str, free_dis: int) -> dict[str, dict]:
     visited = set()
     heap = [(0, start_id, [start_id])]
@@ -57,20 +51,14 @@ def dijkstra_all(sta_dict: dict, start_id: str, free_dis: int) -> dict[str, dict
     return result
 
 # 站名转ID
-
-
 def name_to_id(sta_to_id: dict, name: str) -> str:
     return str(sta_to_id.get(name, -1))
 
 # ID转站名
-
-
 def id_to_name(sta_dict: dict, id_: str) -> str:
     return sta_dict[id_]['name'] if id_ in sta_dict else id_
 
 # 获取站点所属线路名
-
-
 def get_station_lines(sta_id: str, line_detail: dict) -> list:
     lines = []
     for line_id, detail in line_detail.items():
@@ -79,8 +67,6 @@ def get_station_lines(sta_id: str, line_detail: dict) -> list:
     return lines
 
 # 主入口
-
-
 def main():
     import sys
     if len(sys.argv) != 3:
