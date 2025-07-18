@@ -1,22 +1,19 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/universal
 {
-    "name": "Python-metro",
+    "name": "Go-metro",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "image": "mcr.microsoft.com/devcontainers/python:1.2.6-3.13-bookworm",
+    "image": "mcr.microsoft.com/devcontainers/go:1.4.5-1.24-bookworm",
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-azuretools.vscode-docker",
                 "github.vscode-github-actions",
                 "oderwat.indent-rainbow",
-                "ms-python.python",
-                "ms-python.vscode-pylance",
-                "charliermarsh.ruff",
+                "golang.go",
                 "GitHub.copilot",
                 "GitHub.copilot-chat"
             ]
         }
-    },
-    "postCreateCommand": "pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/ && pip install uv"
+    }
 }
