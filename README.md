@@ -80,4 +80,4 @@ https://static.qinxr.cn/Hyacinth/farecalc.json
 
 ## 许可证
 
-MIT License
+LGPL License
