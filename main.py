@@ -4,10 +4,14 @@ import requests
 # 数据源
 DATA_URL = "https://static.qinxr.cn/Hyacinth/farecalc.json"
 
-# 票价计算规则
-
 
 def calc_price(dis: int, free_dis: int) -> int:
+    """
+    根据距离和免费距离计算票价，符合北京地铁实际规则。
+    :param dis: 实际距离（米）
+    :param free_dis: 免费距离（米）
+    :return: 票价（元）
+    """
     dis -= free_dis
     if dis <= -free_dis:
         return 3
@@ -22,18 +26,25 @@ def calc_price(dis: int, free_dis: int) -> int:
     else:
         return int((dis - 32000) / 20000 + 7)
 
-# 加载地铁数据
-
 
 def load_metro_data() -> dict:
+    """
+    加载地铁数据，从远程JSON文件获取。
+    :return: 地铁数据字典
+    """
     resp = requests.get(DATA_URL, timeout=15)
     resp.raise_for_status()
     return resp.json()
 
-# Dijkstra算法，返回所有可达站点及路径、距离、票价
-
 
 def dijkstra_all(sta_dict: dict, start_id: str, free_dis: int) -> dict[str, dict]:
+    """
+    使用Dijkstra算法，返回所有可达站点及其路径、距离、票价。
+    :param sta_dict: 站点信息字典
+    :param start_id: 起始站点ID
+    :param free_dis: 免费距离
+    :return: 站点ID到信息的映射
+    """
     visited = set()
     heap = [(0, start_id, [start_id])]
     result = {}
@@ -56,32 +67,45 @@ def dijkstra_all(sta_dict: dict, start_id: str, free_dis: int) -> dict[str, dict
                         heap, (next_dis, neighbor, path + [neighbor]))
     return result
 
-# 站名转ID
-
 
 def name_to_id(sta_to_id: dict, name: str) -> str:
+    """
+    站名转ID。
+    :param sta_to_id: 站名到ID的映射
+    :param name: 站名
+    :return: 站点ID字符串
+    """
     return str(sta_to_id.get(name, -1))
-
-# ID转站名
 
 
 def id_to_name(sta_dict: dict, id_: str) -> str:
+    """
+    ID转站名。
+    :param sta_dict: 站点信息字典
+    :param id_: 站点ID
+    :return: 站名
+    """
     return sta_dict[id_]['name'] if id_ in sta_dict else id_
-
-# 获取站点所属线路名
 
 
 def get_station_lines(sta_id: str, line_detail: dict) -> list:
+    """
+    获取站点所属线路名。
+    :param sta_id: 站点ID
+    :param line_detail: 线路详情字典
+    :return: 线路名列表
+    """
     lines = []
     for line_id, detail in line_detail.items():
         if int(sta_id) in detail.get('staList', []):
             lines.append(detail['name'])
     return lines
 
-# 主入口
-
 
 def main():
+    """
+    主入口。解析命令行参数，加载数据，计算并输出可达站点。
+    """
     import sys
     if len(sys.argv) < 3 or len(sys.argv) > 4:
         print("用法: python3 main.py <出发站名> <车费预算(元)> [--show-path]")
